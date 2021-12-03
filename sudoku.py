@@ -23,8 +23,9 @@ class Sudoku:
         self.window.title('S U D O K U')
         self.window.configure(background="gray")
         self.puzzle = self.get_and_populate_puzzle("1")
+        self.values = self.get_values()
         self.number_buttons = self.create_number_buttons()
-        self.level_nuttons = self.create_level_buttons()
+        self.level_buttons = self.create_level_buttons()
         self.play_buttons = self.create_play_buttons () 
         self.grid = []
         self.board = []
@@ -44,6 +45,7 @@ class Sudoku:
         for cid in ids:
             data.append(soup.find('input', id=cid))
         #print(data)
+        #global board
         board = [[0 for x in range (9)] for x in range(9)]
         for index, cell in enumerate(data):
             try:
@@ -64,21 +66,40 @@ class Sudoku:
                     out = (P.isdigit() or P == "") and len(P) < 2
                     return out
                 reg = self.window.register(ValidateNumber)
+                #global e
                 e = tk.IntVar()
                 if board[row][column] == 0:
                     e.set("")
                 else:
                     e.set(board[row][column])
                 entry = Entry(self.window, textvariable=e, width = 3, bg=color, justify="center", font=('Arial', 20, 'bold'), validate="key", validatecommand=(reg, "%P")) # STATE = DISABLE (for restriction to change content)
+                #e.set(board[row][column])
                 entry.grid(row=row+1, column=column+1, sticky=NSEW, padx=1, pady=1, ipady=5)
-                 #if board[row][column] == 0:
-                    #entry.config(state='normal')
-                #else:
-                    #entry.config(state='readonly')
                 entry.config(state='normal' if board[row][column] == 0 else 'readonly') # Using ARGS to write it shorter
-                entry.config(readonlybackground=LIGHT_GRAY, foreground=DARK_BLUE if board[row][column] != 0 else LIGHT_BLUE and 'black')
-                cells[(row+1, column+1)] = e
+                entry.config(readonlybackground=LIGHT_GRAY, foreground=DARK_BLUE if board[row][column] != 0 else LIGHT_BLUE and 'black')  
+                cells[(row+1,column+1)] = e
 
+    def get_values(self):
+        # Creating nested list where row lists will be stored:
+        game_board = []
+        for row in range(9):
+            # Creating row lists which will be stored in board nested list:
+            rows = []
+            for column in range (9):
+                # Get values from users entry
+                try: # Pass the error (TclError) of finding value that is not float
+                    global value
+                    value = cells[(row+1,column+1)].get()
+                except TclError:
+                    value = ""
+                #print(value)
+                if value == "":
+                    rows.append(0)
+                else:
+                    rows.append(int(value))
+            game_board.append(rows)
+        #print(game_board)
+     
     def create_number_buttons(self):
         for i in range (1,10,10):
             for j in range (1,10):
@@ -93,11 +114,11 @@ class Sudoku:
         level_hard = Button(self.window, width=6, height=3, text="HARD", highlightbackground=RED, justify="center", font=('Arial', 20, 'bold'))
         level_hard.grid(row=13, column=7, sticky="nsew", padx=1, pady=1, ipadx=5, columnspan=3) 
 
-    def create_play_buttons (self):
-        level_easy = Button(self.window, width=9, height=4, text="CHECK", highlightbackground=BLUE, justify="center", font=('Arial', 20, 'bold'))
-        level_easy.grid(row=14, column=1, sticky="nsew", padx=1, pady=1, ipadx=5, columnspan=9)               
-        level_medium = Button(self.window, width=9, height=4, text="SOLVE", highlightbackground=PETROL_GREEN, justify="center", font=('Arial', 20, 'bold'))
-        level_medium.grid(row=15, column=1, sticky="nsew", padx=1, pady=1, ipadx=5, columnspan=9) 
+    def create_play_buttons(self):
+        check = Button(self.window, width=9, height=4, text="CHECK", highlightbackground=BLUE, justify="center", font=('Arial', 20, 'bold'))
+        check.grid(row=14, column=1, sticky="nsew", padx=1, pady=1, ipadx=5, columnspan=9)               
+        solve = Button(self.window, width=9, height=4, text="SOLVE", highlightbackground=PETROL_GREEN, justify="center", font=('Arial', 20, 'bold'))
+        solve.grid(row=15, column=1, sticky="nsew", padx=1, pady=1, ipadx=5, columnspan=9) 
 
     def run(self):
         self.window.mainloop()
@@ -105,3 +126,5 @@ class Sudoku:
 if __name__ == "__main__":
     sudoku = Sudoku()
     sudoku.run()
+    sudoku.get_values()
+    
