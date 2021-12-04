@@ -29,6 +29,8 @@ class Sudoku:
         self.play_buttons = self.create_play_buttons () 
         self.grid = []
         self.board = []
+        self.locked_cells = []
+        #self.incorrect_cells = []
 
     # Web scraping Sudoku board initializing numbers from https://nine.websudoku.com:
     def get_and_populate_puzzle(self, difficulty):
@@ -82,6 +84,7 @@ class Sudoku:
     def get_values(self):
         # Creating nested list where row lists will be stored:
         game_board = []
+        self.locked_cells = []
         for row in range(9):
             # Creating row lists which will be stored in board nested list:
             rows = []
@@ -97,7 +100,10 @@ class Sudoku:
                     rows.append(0)
                 else:
                     rows.append(int(value))
+                    # Populate self.locked_cells list with matrix position of every given number
+                    self.locked_cells.append([row, column])
             game_board.append(rows)
+        print(self.locked_cells)
         #print(game_board)
      
     def create_number_buttons(self):
@@ -107,11 +113,11 @@ class Sudoku:
                 btn.grid(row=10, column=j-1+1, sticky="nsew", padx=1, pady=1, ipadx=5)
 
     def create_level_buttons(self):
-        level_easy = Button(self.window, width=6, height=3, text="EASY", highlightbackground=GREEN, justify="center", font=('Arial', 20, 'bold'))
+        level_easy = Button(self.window, width=6, height=3, text="EASY", highlightbackground=GREEN, justify="center", font=('Arial', 20, 'bold'), command=lambda: self.get_and_populate_puzzle("1"))
         level_easy.grid(row=13, column=1, sticky="nsew", padx=1, pady=1, ipadx=5, columnspan=3)               
-        level_medium = Button(self.window, width=6, height=3, text="MEDIUM", highlightbackground=YELLOW, justify="center", font=('Arial', 20, 'bold'))
+        level_medium = Button(self.window, width=6, height=3, text="MEDIUM", highlightbackground=YELLOW, justify="center", font=('Arial', 20, 'bold'), command=lambda: self.get_and_populate_puzzle("2"))
         level_medium.grid(row=13, column=4, sticky="nsew", padx=1, pady=1, ipadx=5, columnspan=3) 
-        level_hard = Button(self.window, width=6, height=3, text="HARD", highlightbackground=RED, justify="center", font=('Arial', 20, 'bold'))
+        level_hard = Button(self.window, width=6, height=3, text="HARD", highlightbackground=RED, justify="center", font=('Arial', 20, 'bold'), command=lambda: self.get_and_populate_puzzle("3"))
         level_hard.grid(row=13, column=7, sticky="nsew", padx=1, pady=1, ipadx=5, columnspan=3) 
 
     def create_play_buttons(self):
@@ -126,5 +132,5 @@ class Sudoku:
 if __name__ == "__main__":
     sudoku = Sudoku()
     sudoku.run()
-    sudoku.get_values()
+    #sudoku.get_values()
     
